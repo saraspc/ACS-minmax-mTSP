@@ -42,21 +42,19 @@ b=ACOparam.beta;
 Nants=10;
 rho=ACOparam.rho;
 q0=0.9;
-pbest=0.05;
 cluster_influence=ACOparam.cluster_influence;%if 0 cluster influence is desactivated
 
 tiempo=0;  it=0;
 itglobalBest=0;%iteration at which the global best solution is found
 fbest_globalbest=realmax;%fitness of the global best solution
 
-%construct a tour to know Cnn length of a heuristic tour to initialize the
-%pheromones
+%construct a tour to know Cnn length of a heuristic tour to initialize the pheromones
 if strcmp(ACOparam.cluster_method,"sectors_maxAngle")%determinista
-    tour=NN_sectors_maxAngle(problem)
+    tour=NN_sectors_maxAngle(problem);
 end
 ltour=max_tour_length(tour,dist);
 
-%initialized PHEROMONES between cities
+%initialized pheromones between cities
 phmone=ones(ncities,ncities);
 phmone0=1/(ncities*ltour);
 phmone=phmone0*phmone;
@@ -79,7 +77,7 @@ while tiempo<maxtime & it<maxIter
     tours=cell(Nants,1);
     ltours=zeros(m,Nants);%evaluate fitness while constructing
 
-    %set initial city 
+    %set initial city
     for i=1:Nants
         for k=1:m
             tours{i}{k}=[problem.c0(k)];
@@ -92,7 +90,7 @@ while tiempo<maxtime & it<maxIter
         visited=zeros(1,ncities);
         visited([tours{ant}{:}])=1;
         n_visited=1;
-        while n_visited<ncities 
+        while n_visited<ncities
             %select traveller to choose next move
             if ACOparam.mrandom
                 k=randi(m,1);
@@ -133,12 +131,7 @@ while tiempo<maxtime & it<maxIter
             if symmetric; phmone(j,i)= phmone(i,j); end
 
             %add city j to subtour of k-th traveller
-            try
-                tour{k}(end+1)=j;
-            catch
-                disp('catch')
-                prob=ones(1,ncities); prob(logical(visited))=0;prob=prob./sum(prob);  acup = cumsum(prob);j = find(acup >=rnum, 1);
-            end
+            tour{k}(end+1)=j;
             visited(j)=1;
             n_visited=n_visited+1;
             %eval subtours' length while constructing
@@ -154,7 +147,7 @@ while tiempo<maxtime & it<maxIter
     end
     toc(ticcloop)
 
-    %% evaluate fitness 
+    %% evaluate fitness
     lmaxtours=max(ltours);
     [lmaxtours_sorted,order]=sort(lmaxtours);
     fbestit=lmaxtours_sorted(1);
@@ -162,9 +155,9 @@ while tiempo<maxtime & it<maxIter
     bestTourit=tours{ind};
 
     if fbestit<fbest_globalbest% se ha mejorado la mejor solucion encontrada (considerando desde it=1)
-            fbest_globalbest=fbestit;
-            bestTour_globalbest=bestTourit;
-            itglobalBest=it;
+        fbest_globalbest=fbestit;
+        bestTour_globalbest=bestTourit;
+        itglobalBest=it;
     end
 
     %% local search heuristic (applied to the subtours of each traveller individually)
@@ -183,15 +176,15 @@ while tiempo<maxtime & it<maxIter
             if symmetric; phmone(bestTour_globalbest{k}(t+1),bestTour_globalbest{k}(t))=phmone(bestTour_globalbest{k}(t),bestTour_globalbest{k}(t+1)); end
         end
     end
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+
     fbest_globalbest_iterations(it)=fbest_globalbest;
     tiempo=tiempo+toc(tic1);
 
     time(it)=tiempo;
-    disp(sprintf('ACS mTPS: %s m=%d Iteracion:%d/%d Tiempo %f/%f,  fbest_globalbest=%d, itglobalBest=%d',problem.name,m,it,maxIter,tiempo,maxtime,fbest_globalbest,itglobalBest));
+    disp(sprintf('ACS mTPS: %s m=%d Iteration:%d/%d time %f/%f,  fbest_globalbest=%d, itglobalBest=%d',problem.name,m,it,maxIter,tiempo,maxtime,fbest_globalbest,itglobalBest));
 
 
-end 
+end
 Solution.fbest_globalbest_iterations=fbest_globalbest_iterations;
 Solution.time=time;
 Solution.itglobalBest=itglobalBest;
@@ -199,6 +192,7 @@ Solution.Nants=Nants;
 Solution.bestTour_globalbest=bestTour_globalbest;
 
 if ~isempty(x)
+    figure(3)
     visualize_tours(x,y,problem.c0,bestTour_globalbest,problem.name,fbest_globalbest)
 end
 

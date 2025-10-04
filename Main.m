@@ -15,11 +15,11 @@ folder="ResultsMinMax\"
 instance="berlin52"
 
 %number of travellers
-m=2
+m=3
 
 %stopping criteria
 maxtime=Inf;
-ntours=100800 %250000 fue primer submit, pero como ponia corte en 100000 en el paper decidi bajar para que
+ntours=100000
 
 %number of simulations
 NR=20
@@ -29,17 +29,17 @@ ACOparam.mrandom=0;
 ACOparam.clustercities=1;
 ACOparam.cluster_influence=15;
 ACOparam.cluster_method="sectors_maxAngle";%
-ACOparam.twoopt=1;%wheteher 2-opt heurisitic is applied
+ACOparam.twoopt=1;%wheteher 2-opt heurisitic is applied or not
 for nr=1:NR
-        namefile=folder+instance+"m"+string(m)+"_ACS_mshort_sectorMaxci15_2opt_"+num2str(nr)+".mat"
-        namefig=folder+instance+"m"+string(m)+"_ACS_mshort_sectorMaxci15_2opt_"+num2str(nr)+".jpeg"
+        namefile=folder+instance+"m"+string(m)+"_ACS_"+num2str(nr)+".mat"
+        namefig=folder+instance+"m"+string(m)+"_ACS_"+num2str(nr)+".jpeg"
         if exist(namefile)~=2
             problem=load(instance+".mat")
             problem.c0=[ones(1,m)]% city 1 is selected as depot
             maxIter=round(ntours)/10%10 ants for ACS
             Solution=ACSminmaxTSP_cluster(problem,ACOparam,maxtime,maxIter)
             save(namefile,'Solution')
-            figure(2);print(namefig,'-djpeg');
+            figure(3);print(namefig,'-djpeg');
     end
 end
 
